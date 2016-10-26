@@ -1,0 +1,2 @@
+# pasos-plugin
+WP plugin
