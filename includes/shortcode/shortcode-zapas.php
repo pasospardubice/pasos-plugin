@@ -6,14 +6,16 @@ function zapasy_list_function($atts, $content = null) {
    extract(shortcode_atts(array(
       
       'pocet_zapasu' => 10,
-      'slug_souteze' => 'muzi-a', 
+      'tym' => 'muzi-a', 
       'sezona' => '2016',
       'domaci_zapas' => 'false',
       'zapas_csa' => 'true'
       
    ), $atts));
 
+   global $post;
    $return_string = '<table class="zapasy-tabulka">';
+   $no_result = "";
    
   
    $args = array( 
@@ -23,48 +25,32 @@ function zapasy_list_function($atts, $content = null) {
                       'orderby' => 'meta_value',
                       'meta_key'  => 'date_of_match', 
                       'order' => 'ASC' , 
-                      'showposts' => $pocet_zapasu, 
-                      
-                      
-                       /*'meta_query' => array(
-                      
-                    		            
-                                    
-                                    		array(
-                                    			'key'     => 'zapas_sezona',
-                                    			'value'   => $sezona,
-                                    			'compare' => '=',
-                                    		),
-                        	
-                    	),*/
-                      
-                      'tax_query' => array(
-                                      		
-                                          'relation' => 'AND',
-                                          array(
-                                      			     'taxonomy' => 'soutez',
-                                      			     'field'    => 'slug',
-                                      			     'terms'    => explode( ',', $atts['slug_souteze'] ),
-                                      		      ),
-
-                                          array(
-                                                 'taxonomy' => 'sezona',
-                                                 'field'    => 'slug',
-                                                 'terms'    => explode( ',', $sezona ),
-                                                ),
-                                                
-                                      	),
-                    
-                    
+                      'showposts' => $pocet_zapasu,                           
               ); 
             
-              
+  if ( isset( $sezona ) ) { 
+
+      $args['tax_query'][] = array(
+        'taxonomy' => 'sezona',
+        'terms' => $sezona,
+        'field' => 'slug'
+      );
+  }
+
+  if ( isset( $tym ) ) {   
+
+      $args['tax_query'][] = array(
+        'taxonomy' => 'tym',
+        'terms' => $tym,
+        'field' => 'slug'
+      );
+
+  }
+
    if($domaci_zapas == "true"){
           
             $args['meta_query'][] = array(
                       
-                                  //'relation' => 'AND',
-                                    
                                         array(
                                     			'key'     => 'home_match',
                                     			'value'   => 'yes',
@@ -79,11 +65,6 @@ function zapasy_list_function($atts, $content = null) {
           
             $args['meta_query'][] = array(
                       
-                                  //'relation' => 'AND',
-                                    
-                                    	
-                                        
-                                        
                                          array(
                                         			'key'     => 'zapas_csa',
                                         			'value'   => 'yes',
@@ -100,7 +81,7 @@ function zapasy_list_function($atts, $content = null) {
    
       while (have_posts()) : the_post();
    
-        $tax = "soutez";
+        $tax = "tym";
         $terms = get_the_terms( $post->ID, $tax );
              
               if ( !empty( $terms ) ) {
@@ -209,8 +190,7 @@ function zapasy_list_function($atts, $content = null) {
          }
          
                  
-         //$return_string .= '</td>';
-         
+        
          
          
          $return_string .= '<td style="width: 200px;text-align: left;" class="'.$background_domaci_zapas.'">';
@@ -229,7 +209,7 @@ function zapasy_list_function($atts, $content = null) {
          
          $return_string .= '<td style="width: 150px;text-align: left;" class="'.$background_domaci_zapas.'">';
          
-         if( (get_post_meta( get_the_ID(), 'iscore', true ) != "" ) ){
+        if( (get_post_meta( get_the_ID(), 'iscore', true ) != "" ) ){
          
             $return_string .= "<a target='_blank' href='";
             $return_string .= get_post_meta( get_the_ID(), 'iscore', true );
@@ -237,13 +217,11 @@ function zapasy_list_function($atts, $content = null) {
          
          }
          
-         if( (get_post_meta( get_the_ID(), 'pasos_odkaz', true ) != "" ) ){
+         //if( (get_post_meta( get_the_ID(), 'pasos_odkaz', true ) != "" ) ){
          
-            $return_string .= "<a target='_blank' href='";
-            $return_string .= get_post_meta( get_the_ID(), 'pasos_odkaz', true );
-            $return_string .= "'>Report</a>"; 
+            $return_string .= "<a target='_blank' href='".get_the_permalink()."'>Report</a>"; 
          
-         }
+         //}
                  
          $return_string .= '</td>';
          
@@ -265,7 +243,17 @@ function zapasy_list_function($atts, $content = null) {
    
    $return_string .= '</table>';
    
+   if( isset($no_result) ){
+
+    $no_result = "";
+
+   }else{
+
+    $no_result = $no_result;
+   }
+   
    $return_string .= $no_result;
+
 
    wp_reset_query();
    return $return_string;
@@ -285,9 +273,9 @@ function zapasy_list_table_function($atts, $content = null) {
       
    ), $atts));
 
-   echo "ahoj";
+   global $post;
 
-   $return_string .= '<table class="zapasy-tabulka-table">';
+   $return_string  = '<table class="zapasy-tabulka-table">';
    $return_string .= '<tr>';
    $return_string .= '<td class="table-menu">Datum - čas</td>';
    $return_string .= '<td class="table-menu">Domácí</td>';
@@ -306,41 +294,27 @@ function zapasy_list_table_function($atts, $content = null) {
                       'order' => 'ASC' , 
                       'showposts' => $pocet_zapasu, 
                       
-                      
-                       'meta_query' => array(
-                      
-                                    
-                                    
-                                        array(
-                                          'key'     => 'zapas_sezona',
-                                          'value'   => $sezona,
-                                          'compare' => '=',
-                                        ),
-                          
-                      ),
-                      
-                      'tax_query' => array(
-                                          
-                                          
-                                          'relation' => 'AND',
-                                          array(
-                                                 'taxonomy' => 'soutez',
-                                                 'field'    => 'slug',
-                                                 'terms'    => explode( ',', $atts['slug_souteze'] ),
-                                                ),
-
-                                          array(
-                                                 'taxonomy' => 'sezona',
-                                                 'field'    => 'slug',
-                                                 'terms'    => explode( ',', $atts['sezona'] ),
-                                                ),
-                                                
-                                        ),
-                    
-                    
               ); 
             
-              
+  if ( isset( $sezona ) ) { 
+
+      $args['tax_query'][] = array(
+        'taxonomy' => 'sezona',
+        'terms' => $sezona,
+        'field' => 'slug'
+      );
+  }
+
+  if ( isset( $slug_souteze ) ) {   
+
+      $args['tax_query'][] = array(
+        'taxonomy' => 'tym',
+        'terms' => $slug_souteze,
+        'field' => 'slug'
+      );
+
+  } 
+
    if($domaci_zapas == "true"){
           
             $args['meta_query'][] = array(
@@ -360,7 +334,12 @@ function zapasy_list_table_function($atts, $content = null) {
     if($zapas_csa == "false"){
           
             $args['meta_query'][] = array(
-                                                              
+                      
+                                  //'relation' => 'AND',
+                                    
+                                      
+                                        
+                                        
                                          array(
                                               'key'     => 'zapas_csa',
                                               'value'   => 'yes',
@@ -466,28 +445,28 @@ function zapasy_list_table_function($atts, $content = null) {
             
              if( (get_post_meta( get_the_ID(), 'home_team_result', true ) != "" ) ){             
                
-              $return_string .= '<td style="width: 85px;text-align: center; padding: 0;" class="'.$background_domaci_zapas.'" >';
-              $return_string .= "<strong style='color: black; font-size: 16px;'>";               
+                $return_string .= '<td style="width: 85px;text-align: center; padding: 0;" class="'.$background_domaci_zapas.'" >';
+                $return_string .= "<strong style='color: black; font-size: 16px;'>";               
               
-                if(get_post_meta( get_the_ID(), 'home_team_result', true ) != "" ){
-                
-                   $return_string .= "&nbsp;&nbsp;&nbsp;".get_post_meta( get_the_ID(), 'home_team_result', true )." : "; 
-                
-                }
+                  if(get_post_meta( get_the_ID(), 'home_team_result', true ) != "" ){
+                  
+                     $return_string .= "&nbsp;&nbsp;&nbsp;".get_post_meta( get_the_ID(), 'home_team_result', true )." : "; 
+                  
+                  }
 
-                if(get_post_meta( get_the_ID(), 'away_team_result', true ) != "" ){ 
+                  if(get_post_meta( get_the_ID(), 'away_team_result', true ) != "" ){ 
 
-                  $return_string .= get_post_meta( get_the_ID(), 'away_team_result', true ); 
-                }              
-               
-                $return_string .= "</strong>&nbsp;&nbsp;&nbsp;";
-                $return_string .= '</td>';
+                    $return_string .= get_post_meta( get_the_ID(), 'away_team_result', true ); 
+                  }              
+                 
+                  $return_string .= "</strong>&nbsp;&nbsp;&nbsp;";
+                  $return_string .= '</td>';
               
              }else{
               
-              $return_string .= '<td style="width: 85px;text-align: center; padding: 0;" class="'.$background_domaci_zapas.'" >';
-              $return_string .= " <strong>&nbsp;&nbsp;&nbsp;VS&nbsp;&nbsp;&nbsp;</strong> ";
-              $return_string .= '</td>';
+                $return_string .= '<td style="width: 85px;text-align: center; padding: 0;" class="'.$background_domaci_zapas.'" >';
+                $return_string .= " - ";
+                $return_string .= '</td>';
 
              }
              
@@ -508,13 +487,13 @@ function zapasy_list_table_function($atts, $content = null) {
          
          }
          
-         if( (get_post_meta( get_the_ID(), 'pasos_odkaz', true ) != "" ) ){
+        
          
             $return_string .= "<a target='_blank' href='";
-            $return_string .= get_post_meta( get_the_ID(), 'pasos_odkaz', true );
+            $return_string .= get_the_permalink ( get_the_ID() );
             $return_string .= "'>Report</a>"; 
          
-         }
+         
                  
          $return_string .= '</td>';
          
@@ -524,23 +503,23 @@ function zapasy_list_table_function($atts, $content = null) {
          
          
          $return_string .= '</tr>';
-
    
       endwhile;
+   $no_result = NULL;
 
-   $no_result = ""; 
-   
    else :
    
    $no_result = "Pro tuto sezónu nebyly zadány žádné zápasy.";
    
    endif;
    
+   
    $return_string .= '</table>';
    
    $return_string .= $no_result;
 
    wp_reset_query();
+
    return $return_string;
    
 }
@@ -554,20 +533,16 @@ function nejblizsi_zapas_homepage_function($atts, $content = null) {
       'turnaj' => false
    ), $atts));
 
-   $return_string = '<p>';
-   
+   $return_string = '<p>';   
   
         
-        $args = array( 
-                      
+        $args = array(                       
                       
                       'post_type' => 'zapas',
                       'orderby' => 'meta_value',
                       'meta_key'  => 'date_of_match', 
                       'order' => 'ASC' , 
                       'showposts' => $pocet_zapasu, 
-                      
-                    
                     
               ); 
            
@@ -588,12 +563,12 @@ function nejblizsi_zapas_homepage_function($atts, $content = null) {
                                                                 			'value'   => 'yes',
                                                                 			'compare' => '=',
                                                                 		),*/
-
+/*
                                                                     array(
                                                                   			'key'     => 'turnaj',
                                                                   			'value'   => 'yes',
                                                                   			'compare' => '=',
-                                                                  		),
+                                                                  		),*/
                                                                     
                                                                   
                                                                     
@@ -661,7 +636,7 @@ function nejblizsi_zapas_homepage_function($atts, $content = null) {
                   
         //$return_string .= get_the_title();
 
-         $return_string .= ' <div class="nejblizsi-zapasy-homepage-row">
+         $return_string .= '<div class="nejblizsi-zapasy-homepage-row">
                                   <div class="nejblizsi-zapasy-homepage et_pb_section  et_section_regular">
                                         <div class=" et_pb_row et_pb_row_0">
               
@@ -669,7 +644,7 @@ function nejblizsi_zapas_homepage_function($atts, $content = null) {
               
                                                         <div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left  et_pb_text_0 right"><p>';
               
-                                                                      $return_string .= get_post_meta( get_the_ID(), 'home_team', true );
+                                                                      //$return_string .= get_post_meta( get_the_ID(), 'home_team', true );
       
                                       $return_string .='</p></div> <!-- .et_pb_text -->
                                                </div> <!-- .et_pb_column -->
@@ -679,7 +654,7 @@ function nejblizsi_zapas_homepage_function($atts, $content = null) {
                                                         <div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left  et_pb_text_1 center"><p>';
               
                                                                         //$return_string .= " <strong>VS</strong> ";
-                                                                        $return_string .= get_the_title();
+                                                                        $return_string .= get_post_meta(get_the_ID(),"turnaj_name",true);
       
                                       $return_string .='</p> </div> <!-- .et_pb_text -->
                                                </div> <!-- .et_pb_column -->
@@ -687,7 +662,7 @@ function nejblizsi_zapas_homepage_function($atts, $content = null) {
               
                                                         <div class="et_pb_text et_pb_module et_pb_bg_layout_light et_pb_text_align_left  et_pb_text_2 left"><p>';
               
-                                                                        $return_string .= get_post_meta( get_the_ID(), 'away_team', true );
+                                                                        //$return_string .= get_post_meta( get_the_ID(), 'away_team', true );
       
                                       $return_string .='</p></div> <!-- .et_pb_text -->
                                                </div> <!-- .et_pb_column -->
@@ -700,7 +675,7 @@ function nejblizsi_zapas_homepage_function($atts, $content = null) {
       
       }else{
       
-        $return_string .= ' <div class="nejblizsi-zapasy-homepage-row">
+        $return_string .= '<div class="nejblizsi-zapasy-homepage-row">
                                   <div class="nejblizsi-zapasy-homepage et_pb_section  et_section_regular">
                                         <div class=" et_pb_row et_pb_row_0">
       				
@@ -734,9 +709,6 @@ function nejblizsi_zapas_homepage_function($atts, $content = null) {
       				                          
       			                      </div>';
          
-         //$return_string .= get_post_meta( get_the_ID(), 'home_team', true );
-         //$return_string .= " <strong>&nbsp;&nbsp;&nbsp;VS&nbsp;&nbsp;&nbsp;</strong> ";
-         //$return_string .= get_post_meta( get_the_ID(), 'away_team', true );
       
       }   
          
@@ -914,10 +886,14 @@ function nejblizsi_zapas_homepage_datumu_function($atts, $content = null) {
    
          //$return_string .= get_the_title();
          $datum = get_post_meta( get_the_ID(), 'date_of_match', true );
-         $finalni_datum = date_i18n('j. M (D) - H:i', strtotime($datum)  );
+         $is_turnaj = get_post_meta( get_the_ID(), 'turnaj', true );
          
+         if($is_turnaj == "yes"){
+          $return_string .= get_tournament_date($datum);
+         }else{
+          $return_string .= get_match_date($datum);
+         }
                  
-         $return_string .= $finalni_datum;
          $return_string .= " | ";
          $return_string .= get_post_meta( get_the_ID(), 'hriste', true )."<br />";
    

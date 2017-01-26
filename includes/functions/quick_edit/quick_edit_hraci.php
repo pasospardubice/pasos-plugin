@@ -37,19 +37,18 @@ function manage_wp_posts_be_qe_manage_posts_columns_hraci( $columns, $post_type 
 				 * follow immediately with our custom columns.
 				 */
 				if ( $key == 'title' ) {
-					$new_columns[ 'first_name' ] = 'Křestní jméno';
-					$columns['last_name'] = __( 'Příjmení', 'pasos' );
-          $columns['active_player'] = __( 'Aktivní', 'pasos' );
-          $columns['age'] = __( 'Věk', 'pasos' );
-          $columns['cislo_dresu'] = __( 'Číslo dresu', 'pasos' );
-          $columns['pozice'] = __( 'Pozice', 'pasos' );
-          $columns['palka'] = __( 'Pálka', 'pasos' );
+				  $new_columns[ 'first_name' ] = 'Křestní jméno';
+				  $columns['last_name'] = __( 'Příjmení', 'pasos' );
+		          $columns['active_player'] = __( 'Aktivní', 'pasos' );
+		          $columns['age'] = __( 'Věk', 'pasos' );
+		          $columns['cislo_dresu'] = __( 'Číslo dresu', 'pasos' );
+		          $columns['pozice'] = __( 'Pozice', 'pasos' );
+		          $columns['palka'] = __( 'Pálka', 'pasos' );
 				}
 					
 			}
 			
-			return $new_columns;
-			
+			return $new_columns;			
 	}
 	
 	return $columns;

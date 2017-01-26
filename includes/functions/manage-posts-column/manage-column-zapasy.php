@@ -50,7 +50,13 @@ function custom_zapas_column( $column, $post_id ) {
         
 
         case 'zapas_sezona' :
-            echo get_post_meta( $post_id , 'zapas_sezona' , true ); 
+            $seasons = get_the_terms( $post_id, 'sezona' ); 
+            if( $seasons ){
+                foreach($seasons as $season){
+                echo $season->name;
+                }
+            }
+            //echo get_post_meta( $post_id , 'zapas_sezona' , true ); 
             break;
             
         case 'date_of_match' :
@@ -85,8 +91,10 @@ function tsm_filter_post_type_by_taxonomy() {
 	if ($typenow == $post_type) {
 		$selected      = isset($_GET[$taxonomy]) ? $_GET[$taxonomy] : '';
 		$info_taxonomy = get_taxonomy($taxonomy);
+        $label_taxonomy = $info_taxonomy->label;
+        $taxonomy_label = "Vybrat ".$label_taxonomy;
 		wp_dropdown_categories(array(
-			'show_option_all' => __("Vybrat {$info_taxonomy->label}"),
+			'show_option_all' => __($taxonomy_label),
 			'taxonomy'        => $taxonomy,
 			'name'            => $taxonomy,
 			'orderby'         => 'name',
@@ -114,7 +122,9 @@ function tsm_convert_id_to_term_in_query($query) {
 
 function my_post_type_link_filter_function($post_link, $id = 0, $leavename = FALSE) {
   if (strpos('%author%', $post_link) === FALSE) {
-    $post = &get_post($id);
+    //$post = &get_post($id);
+    $post = get_post($id);
+    
     $author = get_userdata($post->post_author);
     return str_replace('%author%', $author->user_nicename, $post_link);
   }
