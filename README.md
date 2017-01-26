@@ -1,2 +1,2 @@
-# pasos-plugin
+# Pasos plugin
 WP plugin

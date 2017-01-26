@@ -35,10 +35,47 @@ function widget_news_pasos_tymy_function() {
 
 
 }
-
-
-
-
-
 add_action( 'init', 'register_shortcodes_widget_news_pasos_tymy');
+
+add_action( 'init', 'register_shortcodes_widget_video_banner');
+
+function register_shortcodes_widget_video_banner(){
+
+   add_shortcode('widget_video_banner', 'widget_video_banner_function');
+     
+}
+function widget_video_banner_function($atts) {
+
+   extract(shortcode_atts(array(
+   
+      'src' => '',
+      'url' => '',
+      'top_text' => '', 
+      'button_text' => '',
+      'poster' => '', 
+      'mobile_version' => '',    
+      
+   ), $atts));
+
+  $return_string .= '<div class="only_mobile"><a href="/nabor/"><img src="'.$mobile_version.'"></a></div>';
+  
+  $return_string .= '<div class="video-box">';
+
+  $return_string .= '<a class="video-box" href="'.$url.'">';  
+
+  if( $poster ){ $return_string .= '<video loop autoplay poster='.$poster.'>'; }
+
+
+  $return_string .= '<source src="'.$src.'" type="video/mp4">';
+  $return_string .= '</video>';
+  
+  if( $top_text ){ $return_string .= '<div class="video-box__title">'.$top_text.'</div>'; }
+  if( $button_text ){ $return_string .= '<div class="video-box__button">'.$button_text.'</div>'; }
+  
+  $return_string .= '</a>';
+  $return_string .= '</div>';
+  
+  return $return_string;  
+
+}
 ?>

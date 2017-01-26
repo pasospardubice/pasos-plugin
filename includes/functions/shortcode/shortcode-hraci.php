@@ -13,6 +13,7 @@ function seznam_hracu_function($atts, $content = null) {
       'vek' => 'true',
       'palka' => 'true',
       'pozice' => 'false',
+      'sezona' => date("Y"),
       
    ), $atts));
 
@@ -86,16 +87,27 @@ function seznam_hracu_function($atts, $content = null) {
                     	),
                                              
                       'tax_query' => array(
-                                      		
+
+                                          'relation' => 'AND',
+                                          
                                           
                                           array(
-                                      			     'taxonomy' => 'tym',
-                                      			     'field'    => 'slug',
-                                      			     'terms'    => explode( ',', $atts['tym'] ),
-                                      		      ),
+                                                 'taxonomy' => 'sezona',
+                                                 'field'    => 'slug',
+                                                 'terms'    => explode( ',', $sezona ),
+                                                ),
                                                 
-                                      	),
-                      
+                                          
+
+                                          array(
+                                                 'taxonomy' => 'tym',
+                                                 'field'    => 'slug',
+                                                 'terms'    => explode( ',', $atts['tym'] ),
+                                                ),
+
+                                          ),
+                                                
+                                                             
                       
                       
                       

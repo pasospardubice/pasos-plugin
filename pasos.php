@@ -7,12 +7,16 @@
 * Author: Libor Matějka
 * Author URI: https://www.libor-matejka.cz/
 * License: GPL2
+* Tested up to: 4.7
+* Requires at least: 3.2
+*
+* Text Domain: pasos
+* Domain Path: /langugages/
 */ 
 
 
 // Exit if accessed directly
-if (!defined('ABSPATH'))   
-    exit;
+if (!defined('ABSPATH')) exit;
 
 // Define: Start;
 
@@ -23,10 +27,12 @@ define( 'PASOS__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PASOS__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PASOS_PATH', plugin_dir_path(__FILE__));
 
+
+define( 'PASOS_CLASS_PATH', PASOS_PATH . '/includes/class/');
 define( 'PASOS_LANGUAGES_PATH', PASOS_PATH . '/languages/');
 define( 'PASOS_FUNCTIONS_PATH', PASOS_PATH . '/includes/functions/');
 define( 'PASOS_IMAGES_PATH', PASOS__PLUGIN_URL . '/images/');
-define( 'PASOS_CSS_PATH', PASOS__PLUGIN_URL . '/assets/css/');
+define( 'PASOS_CSS_PATH', PASOS__PLUGIN_URL . 'assets/css/');
 define( 'PASOS_JS_PATH', PASOS__PLUGIN_URL . 'assets/js/');
 
 // Define: End;
@@ -49,11 +55,11 @@ define( 'PASOS_JS_PATH', PASOS__PLUGIN_URL . 'assets/js/');
 
 // Custom Taxonomy: End;
 
-// Custom login: Start;
+// Login: Start;
 
-  require_once( PASOS_FUNCTIONS_PATH . 'custom_login.php' );
+  require_once( PASOS_FUNCTIONS_PATH . '/login/login.php' );
 
-// Custom login: End;
+// Login: End;
 
 // Shortcode: Start;
 
@@ -63,7 +69,7 @@ define( 'PASOS_JS_PATH', PASOS__PLUGIN_URL . 'assets/js/');
   require_once( PASOS_FUNCTIONS_PATH . '/shortcode/shortcode-news.php' );
   require_once( PASOS_FUNCTIONS_PATH . '/shortcode/shortcode-archive.php' );
   require_once( PASOS_FUNCTIONS_PATH . '/shortcode/shortcode-widget.php' );
- require_once( PASOS_FUNCTIONS_PATH . '/shortcode/shortcode-submenu.php' );  
+  require_once( PASOS_FUNCTIONS_PATH . '/shortcode/shortcode-submenu.php' );  
   
 // Shortcode: End;
 
@@ -105,3 +111,10 @@ define( 'PASOS_JS_PATH', PASOS__PLUGIN_URL . 'assets/js/');
   require_once( PASOS_FUNCTIONS_PATH . 'members/members-dashboard.php' );
 
 // Members-Roles: End;
+
+
+// Class: Start;
+
+  require_once( PASOS_CLASS_PATH . 'class-pasos-admin-dashboard.php' );
+
+// Class: End;
